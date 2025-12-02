@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Aksa - Sewa Kamera</title>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <header>
+            <h1>Sewa Kamera Profesional</h1>
+            <p>Perluas kreativitas Anda dengan perlengkapan terbaik.</p>
+        </header>
+    
+        <main id="app">
+            <section class="search-controls">
+                <h2>Cari Produk</h2>
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Cari nama kamera, cth: Sony, Canon, Fuji..." 
+                    v-model="searchTerm"
+                    @input="searchProducts"
+                />
+            </section>
+            
+            <hr>
+            
+            <section id="katalog-produk">
+                <h2>Daftar Kamera Tersedia</h2>
+                
+                <div class="sort-controls">
+                    <label>Urutkan Berdasarkan Harga:</label>
+                    <button @click="sortProducts('ascending')" class="btn-sort">Harga Termurah</button>
+                    <button @click="sortProducts('descending')" class="btn-sort">Harga Termahal</button>
+                </div>
+                
+                <div id="product-list" class="katalog-container">
+                    <div class="product-card" v-for="(product, index) in filteredProducts" :key="product.id">
+                        <h3>{{ product.name }}</h3>
+                        <div class="product-detail">
+                            <p>Spesifikasi: {{ product.specs }}</p>
+                            <p class="price">Harga: Rp {{ product.pricePerDay.toLocaleString('id-ID') }} / Hari</p>
+                            
+                            <span :class="['availability-status', product.availability ? 'available' : 'unavailable']">
+                                {{ product.availability ? 'Tersedia' : 'Sedang Disewa' }}
+                            </span>
+                            
+                            <div class="calculator">
+                                <div>
+                                    Durasi Sewa:
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value="1"
+                                        @input="calculateTotal(product.id, product.pricePerDay, $event.target.value)" 
+                                    > Hari
+                                </div>
+                                <p class="total-price">
+                                    Total Biaya: Rp {{ calculatedTotals[product.id] ? calculatedTotals[product.id].toLocaleString('id-ID') : product.pricePerDay.toLocaleString('id-ID') }}
+                                </p>
+                            </div>
+                            
+                            <div style="margin-top: 15px;">
+                                <button @click="toggleAvailability(product.id)">Ubah Ketersediaan</button>
+                                <button class="btn-delete" @click="deleteProduct(index)">Hapus</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p v-if="filteredProducts.length === 0">Tidak ada produk yang ditemukan.</p>
+                </div>
+            </section>
+    
+            <hr>
+    
+            <section class="admin-section">
+                <h2>Tambah Produk Baru</h2>
+                <form @submit.prevent="addProduct">
+                    <div>
+                        <label for="new-name">Nama Item:</label>
+                        <input type="text" id="new-name" v-model="newProduct.name" required>
+                    </div>
+                    <div>
+                        <label for="new-price">Harga Sewa / Hari (Rp):</label>
+                        <input type="number" id="new-price" v-model.number="newProduct.pricePerDay" required min="10000">
+                    </div>
+                    <button type="submit" class="btn-primary">Tambahkan Produk</button>
+                </form>
+            </section>
+        </main>
+    
+        <footer>
+            <p>&copy; 2025 Aksa Sewa Kamera</p>
+        </footer>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>
